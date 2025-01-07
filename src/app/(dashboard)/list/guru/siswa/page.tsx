@@ -1,4 +1,4 @@
-import ListSiswaByKelasView from "@/components/views/guru/LisSiswaByKelasView";
+import ListSiswaByKelasView from "@/components/views/guru/ListSiswaByKelasView";
 
 export const metadata = {
   title: "Data Siswa",

@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/context/useAuth";
 import { useEffect, useState } from "react";
-import Loading from "../Loading";
 import Link from "next/link";
 import {
   FaEye,
@@ -11,8 +10,9 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
+import Loading from "@/components/Loading";
 
-const ListAbsensiSiswaByKelasIdView = () => {
+const ListAbsensiGuruByIdGuruView = () => {
   const [data, setData]: any = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -26,31 +26,18 @@ const ListAbsensiSiswaByKelasIdView = () => {
   const fetchSiswa = async () => {
     try {
       setLoading(true);
-      let url = `${process.env.NEXT_PUBLIC_API_URL}/absensi_siswa?take=${take}&skip=${skip}`;
-      if (search) {
-        url = `${process.env.NEXT_PUBLIC_API_URL}/absensi_siswa/search?take=${take}&skip=${skip}`;
-      }
-      if (user?.kelas.id) {
-        url += `&kelas_id=${user?.kelas.id}`;
-      }
-      if (startDate) {
-        url += `&start_date=${startDate}`;
-      }
-      if (endDate) {
-        url += `&end_date=${endDate}`;
-      }
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/absensi_guru/guru/${user?.guru.id}?take=${take}&skip=${skip}`;
 
       const response = await fetch(url, {
-        method: search ? "POST" : "GET",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: search ? JSON.stringify({ keyword: search }) : null,
       });
 
       const result = await response.json();
-      setData(result.data.absensiSiswa);
+      setData(result.data.absensiGuru);
       setTotal(result.data.total);
       setLoading(false);
     } catch (error) {
@@ -63,7 +50,7 @@ const ListAbsensiSiswaByKelasIdView = () => {
     if (token) {
       fetchSiswa();
     }
-  }, [token, take, skip, startDate, endDate]);
+  }, [token, take, skip]);
 
   if (loading) return <Loading />;
 
@@ -72,42 +59,13 @@ const ListAbsensiSiswaByKelasIdView = () => {
     setSkip(0);
   };
 
-  const handleStartDateChange = (e: any) => {
-    setStartDate(e.target.value);
-    setSkip(0);
-    fetchSiswa();
-  };
-
-  const handleEndDateChange = (e: any) => {
-    setEndDate(e.target.value);
-    setSkip(0);
-    fetchSiswa();
-  };
-
   const handlePageChange = (newSkip: number) => {
     setSkip(newSkip);
   };
 
-  const handleSearch = (e: any) => {
-    e.preventDefault();
-    setSkip(0);
-    fetchSiswa();
-  };
-
-  const handleClearFilter = () => {
-    setSearch("");
-    setSkip(0);
-    setTake(10);
-    setStartDate("");
-    setEndDate("");
-    fetchSiswa();
-  };
-
   return (
     <div className="p-4 w-full space-y-3">
-      <h1 className="text-xl font-semibold">
-        Data Absensi Siswa Kelas ({user?.kelas.nama})
-      </h1>
+      <h1 className="text-xl font-semibold">Data Absensi Guru</h1>
 
       <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
         <div className="mb-3 flex justify-between items-start flex-col md:flex-row gap-3">
@@ -129,61 +87,10 @@ const ListAbsensiSiswaByKelasIdView = () => {
                 <option value={total}>Semua</option>
               </select>
             </div>
-            <div>
-              <label htmlFor="startDate" className="mr-2">
-                Start Date:
-              </label>
-              <input
-                type="date"
-                id="startDate"
-                value={startDate}
-                onChange={handleStartDateChange}
-                className="py-1 px-2 border rounded"
-              />
-            </div>
-            <div>
-              <label htmlFor="endDate" className="mr-2">
-                End Date:
-              </label>
-              <input
-                type="date"
-                id="endDate"
-                value={endDate}
-                onChange={handleEndDateChange}
-                className="py-1 px-2 border rounded"
-              />
-            </div>
-            <div>
-              <button
-                onClick={handleClearFilter}
-                className="p-2 border border-red-500 text-xs text-red-500 rounded"
-              >
-                Clear Filter
-              </button>
-            </div>
           </div>
           <div className="flex gap-3 flex-col md:flex-row md:items-center">
-            <form
-              onSubmit={handleSearch}
-              className="flex gap-2 w-full md:w-auto items-center"
-            >
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-lamaSky"
-              />
-              <button
-                disabled={!search}
-                type="submit"
-                className="p-2 disabled:cursor-not-allowed bg-lamaSky text-white rounded"
-              >
-                <FaSearch />
-              </button>
-            </form>
             <Link
-              href={`${process.env.NEXT_PUBLIC_API_URL}/absensi_siswa/export/excel?take=${take}&skip=${skip}&kelas_id=${user?.kelas.id}&start_date=${startDate}&end_date=${endDate}`}
+              href={`${process.env.NEXT_PUBLIC_API_URL}/absensi_guru/export/excel?take=${take}&skip=${skip}`}
               className="p-2 w-max bg-green-500 text-white rounded flex gap-2"
             >
               <span className="text-xs">Export</span>
@@ -197,10 +104,12 @@ const ListAbsensiSiswaByKelasIdView = () => {
             <thead>
               <tr className="border-gray-200">
                 <th className="px-4 py-2 text-left border">No</th>
-                <th className="px-4 py-2 text-left border">Nama Siswa</th>
+                <th className="px-4 py-2 text-left border">Nama Guru</th>
                 <th className="px-4 py-2 text-left border">Tanggal</th>
                 <th className="px-4 py-2 text-left border">Status</th>
                 <th className="px-4 py-2 text-left border">Kelas</th>
+                <th className="px-4 py-2 text-left border">Jam Pelajaran</th>
+                <th className="px-4 py-2 text-left border">Mapel</th>
                 <th className="px-4 py-2 text-left border">Actions</th>
               </tr>
             </thead>
@@ -212,7 +121,7 @@ const ListAbsensiSiswaByKelasIdView = () => {
                     {skip + index + 1}
                   </td>
                   <td className="px-4 py-2 text-left border">
-                    {item.siswa.nama}
+                    {item.guru.nama}
                   </td>
                   <td className="px-4 py-2 text-left border">
                     {item.tanggal.split("T")[0]}
@@ -231,15 +140,25 @@ const ListAbsensiSiswaByKelasIdView = () => {
                     </span>
                   </td>
                   <td className="px-4 py-2 text-left border">
-                    <span className="px-2 py-1 text-xs text-white rounded bg-green-400">
+                    <span className="px-2 py-1 text-xs text-white rounded bg-blue-400">
                       {item.kelas.nama}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-left border">
+                    <span className="px-2 py-1 text-xs text-white rounded bg-red-400">
+                      {item.jam_mulai} - {item.jam_selesai}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-left border">
+                    <span className="px-2 py-1 text-xs text-white rounded bg-yellow-400">
+                      {item.mapel.nama_mapel}
                     </span>
                   </td>
 
                   <td className="px-4 py-2 text-left border">
                     <div className="flex items-center gap-3">
                       <Link
-                        href={`/list/absensi_siswa/${item.id}`}
+                        href={`/list/absensi_guru/${item.id}`}
                         className="text-green-500 hover:text-green-700"
                       >
                         <FaEye />
@@ -284,4 +203,4 @@ const ListAbsensiSiswaByKelasIdView = () => {
   );
 };
 
-export default ListAbsensiSiswaByKelasIdView;
+export default ListAbsensiGuruByIdGuruView;

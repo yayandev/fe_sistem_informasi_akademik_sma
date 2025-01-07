@@ -81,8 +81,6 @@ const CreateAbsenSiswaView = () => {
       );
       const data = await response.json();
 
-      console.log(data);
-
       setSuccess(data.success);
       setMessage(data.message);
     } catch (error) {

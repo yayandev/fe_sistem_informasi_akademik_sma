@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardAdminView from "@/components/views/DashboardAdminView";
+import DashboardAdminView from "@/components/views/admin/DashboardAdminView";
 import DashboardGuruView from "@/components/views/DashboardGuruView";
 import DashboardSiswaView from "@/components/views/DashboardSiswaView";
 import { useAuth } from "@/context/useAuth";

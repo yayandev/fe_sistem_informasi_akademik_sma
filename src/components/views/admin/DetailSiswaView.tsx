@@ -2,10 +2,11 @@
 
 import Loading from "@/components/Loading";
 import { useAuth } from "@/context/useAuth";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 function DetailSiswaView({ id }: any) {
-  const { token } = useAuth();
+  const { token, user }: any = useAuth();
   const [loading, setLoading] = useState(true);
   const [dataSiswa, setDataSiswa]: any = useState(null);
   const [dataAbsen, setDataAbsen]: any = useState([]);
@@ -79,27 +80,35 @@ function DetailSiswaView({ id }: any) {
       <h1 className="text-xl font-semibold">Detail Siswa</h1>
 
       <div className="bg-white p-3 space-y-3 rounded-md shadow-sm">
-        <div className="flex gap-3">
-          <button
-            onClick={() => handleTabChange("dataSiswa")}
-            className={`py-2 px-4 rounded-md ${
-              activeTab === "dataSiswa"
-                ? "bg-lamaSky text-white"
-                : "bg-slate-300"
-            }`}
+        <div className="flex justify-between gap-3">
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleTabChange("dataSiswa")}
+              className={`py-2 px-4 rounded-md ${
+                activeTab === "dataSiswa"
+                  ? "bg-lamaSky text-white"
+                  : "bg-slate-300"
+              }`}
+            >
+              Data Siswa
+            </button>
+            <button
+              onClick={() => handleTabChange("dataAbsen")}
+              className={`py-2 px-4 rounded-md ${
+                activeTab === "dataAbsen"
+                  ? "bg-lamaSky text-white"
+                  : "bg-slate-300"
+              }`}
+            >
+              Data Absen
+            </button>
+          </div>
+          <Link
+            href={user?.role === "admin" ? "/list/siswa" : "/list/guru/siswa"}
+            className="py-2 px-4 rounded-md bg-lamaPurple text-white"
           >
-            Data Siswa
-          </button>
-          <button
-            onClick={() => handleTabChange("dataAbsen")}
-            className={`py-2 px-4 rounded-md ${
-              activeTab === "dataAbsen"
-                ? "bg-lamaSky text-white"
-                : "bg-slate-300"
-            }`}
-          >
-            Data Absen
-          </button>
+            Kembali
+          </Link>
         </div>
 
         {activeTab === "dataSiswa" && (

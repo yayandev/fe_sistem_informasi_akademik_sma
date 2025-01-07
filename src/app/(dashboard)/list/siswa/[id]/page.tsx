@@ -1,4 +1,4 @@
-import DetailSiswaView from "@/components/views/siswa/DetailSiswaView";
+import DetailSiswaView from "@/components/views/admin/DetailSiswaView";
 
 export const metadata = {
   title: "Detail Siswa",
