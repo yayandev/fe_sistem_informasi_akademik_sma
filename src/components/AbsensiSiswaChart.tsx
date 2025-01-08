@@ -3,7 +3,6 @@ import Image from "next/image";
 import {
   BarChart,
   Bar,
-  Rectangle,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -12,39 +11,24 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Mon",
-    present: 60,
-    absent: 40,
-  },
-  {
-    name: "Tue",
-    present: 70,
-    absent: 60,
-  },
-  {
-    name: "Wed",
-    present: 90,
-    absent: 75,
-  },
-  {
-    name: "Thu",
-    present: 90,
-    absent: 75,
-  },
-  {
-    name: "Fri",
-    present: 65,
-    absent: 55,
-  },
-];
+const transformData = (monthlyData: any) => {
+  return Object.values(monthlyData).map((item: any) => {
+    const siswa = item.siswa || {}; // Menangani jika data siswa tidak ada
+    return {
+      name: item.namaBulan,
+      present: siswa.hadir || 0, // Jika siswa.hadir undefined, set 0
+      absent: (siswa.izin || 0) + (siswa.sakit || 0) + (siswa.alfa || 0), // Set default 0 jika tidak ada
+    };
+  });
+};
 
-const AttendanceChart = () => {
+const AbsensiSiswaChart = ({ monthly }: any) => {
+  const data = transformData(monthly);
+
   return (
     <div className="bg-white rounded-lg p-4 h-full">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">Attendance</h1>
+        <h1 className="text-lg font-semibold">Absensi Siswa</h1>
         <Image src="/moreDark.png" alt="" width={20} height={20} />
       </div>
       <ResponsiveContainer width="100%" height="90%">
@@ -83,4 +67,4 @@ const AttendanceChart = () => {
   );
 };
 
-export default AttendanceChart;
+export default AbsensiSiswaChart;

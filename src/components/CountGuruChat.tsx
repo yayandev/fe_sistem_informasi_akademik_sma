@@ -2,17 +2,17 @@
 import Image from "next/image";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 
-const CountChart = ({ totalBoys, totalGirls, totalStudents }: any) => {
+const CountGuruChart = ({ totalBoys, totalGirls, totalTeachers }: any) => {
   // Check to prevent division by zero
   const boysPercentage =
-    totalStudents > 0 ? ((totalBoys / totalStudents) * 100).toFixed(2) : "0";
+    totalTeachers > 0 ? ((totalBoys / totalTeachers) * 100).toFixed(2) : "0";
   const girlsPercentage =
-    totalStudents > 0 ? ((totalGirls / totalStudents) * 100).toFixed(2) : "0";
+    totalTeachers > 0 ? ((totalGirls / totalTeachers) * 100).toFixed(2) : "0";
 
   const data = [
     {
       name: "Total",
-      count: totalStudents,
+      count: totalTeachers,
       fill: "white",
     },
     {
@@ -31,7 +31,7 @@ const CountChart = ({ totalBoys, totalGirls, totalStudents }: any) => {
     <div className="bg-white rounded-xl w-full h-full p-4">
       {/* TITLE */}
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">Students</h1>
+        <h1 className="text-lg font-semibold">Teachers</h1>
         <Image src="/moreDark.png" alt="More options" width={20} height={20} />
       </div>
       {/* CHART */}
@@ -73,4 +73,4 @@ const CountChart = ({ totalBoys, totalGirls, totalStudents }: any) => {
   );
 };
 
-export default CountChart;
+export default CountGuruChart;
