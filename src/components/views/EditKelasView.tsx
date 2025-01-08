@@ -377,17 +377,15 @@ const EditKelasView = ({ id }: any) => {
                           Jadikan KM
                         </button>
                       )}
-                      {data?.ketuaKelasId !== s.id && (
-                        <button
-                          onClick={() =>
-                            confirm("Apakah anda yakin?") &&
-                            deleteSiswaFromKelas(s.id)
-                          }
-                          className="text-red-500"
-                        >
-                          Hapus
-                        </button>
-                      )}
+                      <button
+                        onClick={() =>
+                          confirm("Apakah anda yakin?") &&
+                          deleteSiswaFromKelas(s.id)
+                        }
+                        className="text-red-500"
+                      >
+                        Hapus
+                      </button>
                     </div>
                   </td>
                 </tr>

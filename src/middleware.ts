@@ -6,10 +6,14 @@ export async function middleware(request: NextRequest) {
 
   // Definisikan jalur untuk role admin, user, dan publik
   const adminPath = ["/list/guru", "/list/siswa"];
-  const publicPath = ["/login", "/"];
+  const publicPath = ["/login"];
 
   const isAdminPath = adminPath.some((adminRoute) => adminRoute === path);
   const isPublicPath = publicPath.some((publicRoute) => publicRoute === path);
+
+  if (path === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+  }
 
   // Ambil token dari cookie
   const token = request.cookies.get("token")?.value;

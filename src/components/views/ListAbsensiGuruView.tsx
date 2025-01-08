@@ -266,7 +266,7 @@ const ListAbsensiGuruView = () => {
                   </td>
                   <td className="px-4 py-2 text-left border">
                     <span className="px-2 py-1 text-xs text-white rounded bg-blue-400">
-                      {item.kelas.nama}
+                      {item?.kelas ? item.kelas.nama : "KELAS TIDAK ADA"}
                     </span>
                   </td>
                   <td className="px-4 py-2 text-left border">

@@ -14,6 +14,7 @@ const menuItems = [
         href: "/dashboard",
         visible: ["admin", "siswa", "guru"],
       },
+
       {
         icon: "/teacher.png",
         label: "Data Guru",
@@ -36,7 +37,19 @@ const menuItems = [
         label: "Data Kelas",
         href: "/list/kelas",
         visible: ["admin"],
-        icon: "/lesson.png",
+        icon: "/class.png",
+      },
+      {
+        icon: "/exam.png",
+        label: "Data Mapel",
+        href: "/list/mapel",
+        visible: ["admin"],
+      },
+      {
+        label: "Data Jadwal",
+        href: "/list/jadwal",
+        visible: ["admin"],
+        icon: "/calendar.png",
       },
       {
         label: "Jadwal",

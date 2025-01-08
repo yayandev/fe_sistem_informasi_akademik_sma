@@ -17,7 +17,7 @@ const transformData = (monthlyData: any) => {
     return {
       name: item.namaBulan,
       present: guru.hadir || 0, // Jika guru.hadir undefined, set 0
-      absent: (guru.izin || 0) + (guru.sakit || 0) + (guru.alfa || 0), // Set default 0 jika tidak ada
+      absent: (guru.izin || 0) + (guru.sakit || 0) + (guru.alpa || 0), // Set default 0 jika tidak ada
     };
   });
 };
@@ -32,7 +32,7 @@ const AbsensiGuruChart = ({ monthly }: any) => {
         <Image src="/moreDark.png" alt="" width={20} height={20} />
       </div>
       <ResponsiveContainer width="100%" height="90%">
-        <BarChart width={500} height={300} data={data} barSize={20}>
+        <BarChart width={500} height={300} data={data} barSize={15}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ddd" />
           <XAxis
             dataKey="name"

@@ -29,7 +29,6 @@ const DashboardAdminView = () => {
         );
         const data = await response.json();
         setDataDashboard(data.data);
-        console.log(data.data);
       } catch (error) {
         console.error("Fetch error:", error);
       } finally {
@@ -66,7 +65,7 @@ const DashboardAdminView = () => {
           </div>
           {/* ATTENDANCE CHART */}
           <div className="w-full lg:w-2/3 h-[450px]">
-            <AbsensiSiswaChart monthly={dataDashboard?.absensi.monthly} />
+            <AbsensiSiswaChart monthly={dataDashboard?.absensi.monthly || []} />
           </div>
         </div>
         {/* BOTTOM CHART */}
@@ -81,7 +80,7 @@ const DashboardAdminView = () => {
           </div>
           {/* ATTENDANCE CHART */}
           <div className="w-full lg:w-2/3 h-[450px]">
-            <AbsensiGuruChart monthly={dataDashboard?.absensi.monthly} />
+            <AbsensiGuruChart monthly={dataDashboard?.absensi.monthly || []} />
           </div>
         </div>
       </div>

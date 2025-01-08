@@ -4,7 +4,7 @@ import Loading from "@/components/Loading";
 import { useAuth } from "@/context/useAuth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 const CreateSiswaView = () => {
   const [loading, setLoading] = useState(false);
@@ -254,7 +254,7 @@ const CreateSiswaView = () => {
                   <option value="" selected disabled>
                     Pilih Kelas
                   </option>
-                  {kelas.map((item: any) => (
+                  {kelas?.map((item: any) => (
                     <option key={item.id} value={item.id}>
                       {item.nama}
                     </option>

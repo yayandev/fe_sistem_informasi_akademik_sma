@@ -68,7 +68,7 @@ const DetailKelasView = ({ id }: any) => {
               Wali Kelas
             </th>
             <td className="px-4 py-2 text-left border border-gray-200">
-              {data?.waliKelas ? data?.waliKelas?.nama : "-"}
+              {data?.waliKelas ? data?.waliKelas?.name : "-"}
             </td>
           </tr>
           <tr>

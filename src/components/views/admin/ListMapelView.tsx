@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Loading from "../Loading";
 import { useAuth } from "@/context/useAuth";
 import {
   FaTrash,
@@ -12,9 +11,10 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import Loading from "@/components/Loading";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ListKelasView = () => {
+const ListMapelView = () => {
   const [data, setData]: any = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(""); // State for search input
@@ -25,21 +25,24 @@ const ListKelasView = () => {
   const [modalAdd, setModalAdd] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
-  const [guruNotWaliKelas, setGuruNotWaliKelas] = useState([]);
+  const [modalEdit, setModalEdit] = useState(false);
+  const [editData, setEditData]: any = useState(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
+    reset,
   }: any = useForm();
 
-  const fetchKelas = async () => {
+  const fetchMapel = async () => {
     try {
       setLoading(true);
       let response;
       if (search) {
         response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/kelas/search`,
+          `${process.env.NEXT_PUBLIC_API_URL}/mapels/search`,
           {
             method: "POST",
             headers: {
@@ -51,7 +54,7 @@ const ListKelasView = () => {
         );
       } else {
         response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/kelas?take=${take}&skip=${skip}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/mapels?take=${take}&skip=${skip}`,
           {
             method: "GET",
             headers: {
@@ -71,31 +74,9 @@ const ListKelasView = () => {
     }
   };
 
-  const fetchGuruNotWaliKelas = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/gurus/not/walikelas`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const result = await response.json();
-      setGuruNotWaliKelas(result.data);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  };
-
   useEffect(() => {
-    if (token) {
-      fetchKelas();
-      fetchGuruNotWaliKelas();
-    }
-  }, [token, take, skip]);
+    fetchMapel();
+  }, [take, skip]);
 
   if (loading) return <Loading />;
 
@@ -111,21 +92,24 @@ const ListKelasView = () => {
   const handleSearch = (e: any) => {
     e.preventDefault();
     setSkip(0); // Reset to first page for search results
-    fetchKelas();
+    fetchMapel();
   };
 
-  const onSubmitAddKelas = async (data: any) => {
+  const onSubmitAddMapel = async (data: any) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/kelas/create`,
+        `${process.env.NEXT_PUBLIC_API_URL}/mapels/create`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            nama_mapel: data.nama_mapel,
+            kkm: Number(data.kkm),
+          }),
         }
       );
 
@@ -133,13 +117,15 @@ const ListKelasView = () => {
       if (response.status === 201) {
         setAlertMessage(result.message);
         setAlertType("success");
+        reset();
+        fetchMapel();
       } else {
         setAlertMessage(result.message);
         setAlertType("error");
       }
     } catch (error) {
       console.error("Fetch error:", error);
-      setAlertMessage("Terjadi kesalahan saat membuat kelas.");
+      setAlertMessage("Terjadi kesalahan saat membuat Mapel.");
       setAlertType("error");
     } finally {
       setModalAdd(false);
@@ -147,10 +133,58 @@ const ListKelasView = () => {
     }
   };
 
-  const handleDeleteKelas = async (id: number) => {
+  const showModalEdit = (data: any) => {
+    setModalEdit(true);
+    setEditData(data);
+    setValue("nama_mapel", data.nama_mapel);
+    setValue("kkm", data.kkm);
+  };
+
+  const closeModalEdit = () => {
+    setModalEdit(false);
+    setEditData(null);
+    reset();
+  };
+
+  const onSubmitEditMapel = async (data: any) => {
+    setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/kelas/delete/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/mapels/update/${editData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nama_mapel: data.nama_mapel,
+            kkm: Number(data.kkm),
+          }),
+        }
+      );
+      const result = await response.json();
+      if (response.status === 200) {
+        setAlertMessage(result.message);
+        setAlertType("success");
+        fetchMapel();
+        closeModalEdit();
+      } else {
+        setAlertMessage(result.message);
+        setAlertType("error");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteMapel = async (id: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/mapels/delete/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -159,20 +193,17 @@ const ListKelasView = () => {
           },
         }
       );
-
       const result = await response.json();
       if (response.status === 200) {
         setAlertMessage(result.message);
         setAlertType("success");
-        fetchKelas();
+        fetchMapel();
       } else {
         setAlertMessage(result.message);
         setAlertType("error");
       }
     } catch (error) {
-      console.log(error);
-      setAlertMessage("Terjadi Kesalahan saat menghapus, Ulangi kembali!");
-      setAlertType("error");
+      console.error("Fetch error:", error);
     } finally {
       setLoading(false);
     }
@@ -180,13 +211,13 @@ const ListKelasView = () => {
 
   return (
     <div className="p-4 w-full space-y-3">
-      <h1 className="text-xl font-semibold">Data Kelas</h1>
+      <h1 className="text-xl font-semibold">Data Mapel</h1>
 
       {alertMessage && (
         <div
           className={`px-4 py-2 text-sm rounded-md ${
             alertType === "success" ? "bg-green-400" : "bg-red-400"
-          } text-white flex items-center justify-between`}
+          } text-white flex justify-between items-center`}
         >
           <span>{alertMessage}</span>
           <button onClick={() => setAlertMessage("")}>
@@ -223,29 +254,28 @@ const ListKelasView = () => {
                 className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-lamaSky"
               />
               <button
-                disabled={!search}
                 type="submit"
                 className="p-2 disabled:cursor-not-allowed bg-lamaSky text-white rounded"
               >
                 <FaSearch />
               </button>
             </form>
-            <div className="flex gap-3 items-center flex-wrap">
+            <div className="flex gap-3 flex-wrap items-center">
               <button
                 onClick={() => setModalAdd(true)}
                 className="py-2 px-4 rounded-md bg-green-400 text-white text-xs font-semibold"
               >
-                Tambah Kelas
+                Tambah Mapel
               </button>
               <Link
-                href={"/import/kelas"}
+                href={"/import/mapel"}
                 className="p-2 bg-yellow-500 text-white rounded flex gap-2"
               >
                 <span className="text-xs md:block hidden">Import</span>
                 <FaFileExcel />
               </Link>
               <Link
-                href={`${process.env.NEXT_PUBLIC_API_URL}/kelas/export/excel?take=${take}&skip=${skip}`}
+                href={`${process.env.NEXT_PUBLIC_API_URL}/mapels/export/excel?take=${take}&skip=${skip}`}
                 className="p-2 bg-green-500 text-white rounded flex gap-2"
               >
                 <span className="text-xs md:block hidden">Export</span>
@@ -260,44 +290,38 @@ const ListKelasView = () => {
             <thead>
               <tr className="border-gray-200">
                 <th className="px-4 py-2 text-left border">No</th>
-                <th className="px-4 py-2 text-left border">Nama Kelas</th>
-                <th className="px-4 py-2 text-left border">Wali Kelas</th>
+                <th className="px-4 py-2 text-left border">Nama Mapel</th>
+                <th className="px-4 py-2 text-left border">KKM</th>
                 <th className="px-4 py-2 text-left border">Tanggal Dibuat</th>
                 <th className="px-4 py-2 text-left border">Actions</th>
               </tr>
             </thead>
 
             <tbody>
-              {data?.kelas.map((item: any, index: number) => (
+              {data?.mapel.map((item: any, index: number) => (
                 <tr key={index} className="border-gray-200">
                   <td className="px-4 py-2 text-left border">
                     {skip + index + 1}
                   </td>
-                  <td className="px-4 py-2 text-left border">{item.nama}</td>
                   <td className="px-4 py-2 text-left border">
-                    {item.waliKelas ? item?.waliKelas?.name : "-"}
+                    {item.nama_mapel}
                   </td>
+                  <td className="px-4 py-2 text-left border">{item.kkm}</td>
                   <td className="px-4 py-2 text-left border">
                     {item.createdAt.split("T")[0]}
                   </td>
                   <td className="px-4 py-2 text-left border">
                     <div className="flex items-center gap-3">
-                      <Link
-                        href={`/list/kelas/${item.id}`}
-                        className="text-green-500 hover:text-green-700"
-                      >
-                        <FaEye />
-                      </Link>
-                      <Link
-                        href={`/list/kelas/edit/${item.id}`}
+                      <button
+                        onClick={() => showModalEdit(item)}
                         className="text-blue-500 hover:text-blue-700"
                       >
                         <FaPencilAlt />
-                      </Link>
+                      </button>
                       <button
                         onClick={() =>
                           confirm("Apakah anda yakin mau menghapus?") &&
-                          handleDeleteKelas(item.id)
+                          handleDeleteMapel(item.id)
                         }
                         className="text-red-500 hover:text-red-700"
                       >
@@ -336,50 +360,49 @@ const ListKelasView = () => {
       {modalAdd && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white w-[90%] md:w-1/3 p-4 rounded-md shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Tambah Kelas</h2>
+            <h2 className="text-lg font-semibold mb-4">Tambah Mapel</h2>
             <form
               action=""
-              onSubmit={handleSubmit(onSubmitAddKelas)}
+              onSubmit={handleSubmit(onSubmitAddMapel)}
               className="space-y-3"
             >
               <input
                 type="text"
-                placeholder="Nama Kelas"
-                {...register("nama", {
+                placeholder="Nama Pelajaran"
+                {...register("nama_mapel", {
                   required: {
                     value: true,
-                    message: "Nama kelas harus diisi",
+                    message: "Nama pelajaran harus diisi",
                   },
                 })}
                 className={`w-full p-2 border border-gray-300 rounded focus:outline-lamaSky ${
-                  errors.nama ? "border-red-500" : ""
+                  errors.nama_mapel ? "border-red-500" : ""
                 }`}
               />
-              {errors.nama && (
+              {errors.nama_mapel && (
                 <span className="text-red-500 text-xs">
-                  {errors.nama.message}
+                  {errors.nama_mapel.message}
                 </span>
               )}
 
-              <select
-                {...register("waliKelasId", {
+              <input
+                type="number"
+                placeholder="KKM"
+                {...register("kkm", {
                   required: {
                     value: true,
-                    message: "Walikelas harus diisi",
+                    message: "KKM harus diisi",
                   },
                 })}
-                id=""
                 className={`w-full p-2 border border-gray-300 rounded focus:outline-lamaSky ${
-                  errors.waliKelasId ? "border-red-500" : ""
+                  errors.kkm ? "border-red-500" : ""
                 }`}
-              >
-                <option value="">Pilih Walikelas</option>
-                {guruNotWaliKelas.map((item: any) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
+              />
+              {errors.kkm && (
+                <span className="text-red-500 text-xs">
+                  {errors.kkm.message}
+                </span>
+              )}
               <div className="flex gap-3">
                 <button
                   type="submit"
@@ -399,8 +422,74 @@ const ListKelasView = () => {
           </div>
         </div>
       )}
+
+      {modalEdit && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white w-[90%] md:w-1/3 p-4 rounded-md shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Edit Mapel</h2>
+            <form
+              action=""
+              onSubmit={handleSubmit(onSubmitEditMapel)}
+              className="space-y-3"
+            >
+              <input
+                type="text"
+                placeholder="Nama Pelajaran"
+                {...register("nama_mapel", {
+                  required: {
+                    value: true,
+                    message: "Nama pelajaran harus diisi",
+                  },
+                })}
+                className={`w-full p-2 border border-gray-300 rounded focus:outline-lamaSky ${
+                  errors.nama_mapel ? "border-red-500" : ""
+                }`}
+              />
+              {errors.nama_mapel && (
+                <span className="text-red-500 text-xs">
+                  {errors.nama_mapel.message}
+                </span>
+              )}
+
+              <input
+                type="number"
+                placeholder="KKM"
+                {...register("kkm", {
+                  required: {
+                    value: true,
+                    message: "KKM harus diisi",
+                  },
+                })}
+                className={`w-full p-2 border border-gray-300 rounded focus:outline-lamaSky ${
+                  errors.kkm ? "border-red-500" : ""
+                }`}
+              />
+              {errors.kkm && (
+                <span className="text-red-500 text-xs">
+                  {errors.kkm.message}
+                </span>
+              )}
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="bg-green-400 text-white py-2 px-4 rounded-md border-none w-max"
+                >
+                  Simpan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => closeModalEdit()}
+                  className="bg-red-400 text-white py-2 px-4 rounded-md border-none w-max"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ListKelasView;
+export default ListMapelView;
