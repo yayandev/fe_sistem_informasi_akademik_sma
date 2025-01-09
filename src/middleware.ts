@@ -69,5 +69,16 @@ export async function middleware(request: NextRequest) {
 
 // Konfigurasi matcher untuk mencocokkan jalur
 export const config = {
-  matcher: ["/", "/dashboard", "/login", "/logout", "/list/:path*"],
+  matcher: [
+    "/",
+    "/dashboard",
+    "/login",
+    "/logout",
+    "/list/:path*",
+    "/absen_siswa",
+    "/absen_siswa/create",
+    "/absen_guru/create",
+    "/profile",
+    "/settings",
+  ],
 };
