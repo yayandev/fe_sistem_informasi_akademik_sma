@@ -53,9 +53,10 @@ const CreateGuruView = () => {
       setLoading(false);
     }
   };
+
   return (
     <div className="p-4 w-full space-y-3">
-      <h1 className="text-xl font-semibold">Buat Siswa</h1>
+      <h1 className="text-xl font-semibold">Tambah Guru</h1>
 
       {alertMessage && (
         <div
@@ -103,7 +104,7 @@ const CreateGuruView = () => {
                 />
                 {errors.name && (
                   <p className="text-xs text-red-400">
-                    {errors.nama.message.toString()}
+                    {errors.name.message.toString()}
                   </p>
                 )}
               </div>
@@ -154,9 +155,7 @@ const CreateGuruView = () => {
                     errors.jenis_kelamin ? "border-red-500" : "border-gray-300"
                   }`}
                 >
-                  <option value="" disabled selected>
-                    Pilih Jenis Kelamin
-                  </option>
+                  <option value="">Pilih Jenis Kelamin</option>
                   <option value="Laki-laki">Laki-laki</option>
                   <option value="Perempuan">Perempuan</option>
                 </select>

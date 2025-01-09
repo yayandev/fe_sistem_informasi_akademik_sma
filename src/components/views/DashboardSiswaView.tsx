@@ -33,12 +33,19 @@ const DashboardSiswaView = () => {
             >
               Absensi Siswa
             </Link>
-            {user?.siswa.id === user?.siswa.kelas.ketuaKelasId && (
+            {user?.siswa.id === user?.siswa.kelas.ketuaKelasId ? (
               <Link
                 href={"/absen_guru/create"}
                 className="bg-green-400 hover:opacity-75 text-white font-bold py-2 px-4 rounded"
               >
                 Absensi Guru
+              </Link>
+            ) : (
+              <Link
+                href={"/jadwal_siswa"}
+                className="bg-green-400 hover:opacity-75 text-white font-bold py-2 px-4 rounded"
+              >
+                Jadwal
               </Link>
             )}
           </div>

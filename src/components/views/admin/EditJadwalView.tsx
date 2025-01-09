@@ -13,6 +13,7 @@ const EditJadwalView = ({ id }: { id: string }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   }: any = useForm();
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
@@ -26,9 +27,9 @@ const EditJadwalView = ({ id }: { id: string }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/jadwals/create`,
+        `${process.env.NEXT_PUBLIC_API_URL}/jadwals/update/${id}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -42,7 +43,6 @@ const EditJadwalView = ({ id }: { id: string }) => {
       if (response.ok) {
         setAlertMessage(result.message);
         setAlertType("success");
-        reset();
       } else {
         setAlertMessage(result.message);
         setAlertType("");
@@ -59,6 +59,28 @@ const EditJadwalView = ({ id }: { id: string }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const resDataJadwal = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/jadwals/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const dataJadwal = await resDataJadwal.json();
+
+      const data = dataJadwal?.data;
+
+      setValue("hari", data?.hari);
+      setValue("waktu_mulai", data?.waktu_mulai);
+      setValue("waktu_selesai", data?.waktu_selesai);
+      setValue("kelasId", data?.kelasId);
+      setValue("mapelId", data?.mapelId);
+      setValue("guruId", data?.guruId);
+
       const resGurus = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gurus`, {
         method: "GET",
         headers: {

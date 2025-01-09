@@ -1,7 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
 .react-calendar {
   width: 100% !important;
   border: none !important;
@@ -102,7 +106,7 @@
   background-color: #fdf2fb !important;
 }
 
-.rbc-event-label{
+.rbc-event-label {
   color: gray !important;
   margin-bottom: 5px;
 }

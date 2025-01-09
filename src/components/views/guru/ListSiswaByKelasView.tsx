@@ -9,14 +9,17 @@ import {
   FaSearch,
   FaFileExcel,
   FaPlus,
+  FaFilePdf, // Import icon PDF
 } from "react-icons/fa";
 import Link from "next/link";
 import Loading from "@/components/Loading";
+import jsPDF from "jspdf"; // Import jsPDF
+import html2canvas from "html2canvas"; // Import html2canvas
 
 const ListSiswaByKelasView = () => {
   const [data, setData]: any = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState(""); // State for search input
+  const [search, setSearch] = useState("");
   const { token, user }: any = useAuth();
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
@@ -51,8 +54,8 @@ const ListSiswaByKelasView = () => {
         );
       }
       const result = await response.json();
-      setData(result.data);
-      setTotal(result.data.total || 0); // Handle total for search results
+      setData(result?.data);
+      setTotal(result?.data?.total || 0);
       setLoading(false);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -66,11 +69,26 @@ const ListSiswaByKelasView = () => {
     }
   }, [token, take, skip]);
 
+  const generatePDF = async () => {
+    const input: any = document.getElementById("siswaTable");
+    const canvas = await html2canvas(input, {
+      ignoreElements: (element) => element.classList.contains("no-print"),
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("data-siswa.pdf");
+  };
+
   if (loading) return <Loading />;
 
   const handleTakeChange = (e: any) => {
     setTake(Number(e.target.value));
-    setSkip(0); // Reset to first page
+    setSkip(0);
   };
 
   const handlePageChange = (newSkip: number) => {
@@ -79,7 +97,7 @@ const ListSiswaByKelasView = () => {
 
   const handleSearch = (e: any) => {
     e.preventDefault();
-    setSkip(0); // Reset to first page for search results
+    setSkip(0);
     fetchSiswa();
   };
 
@@ -131,17 +149,24 @@ const ListSiswaByKelasView = () => {
                 <span className="text-xs md:block hidden">Export</span>
                 <FaFileExcel />
               </Link>
+              <button
+                onClick={generatePDF}
+                className="p-2 bg-red-500 text-white rounded flex gap-2"
+              >
+                <span className="text-xs md:block hidden">Print PDF</span>
+                <FaFilePdf />
+              </button>
             </div>
           </div>
         </div>
         <div className="overflow-auto">
-          <table className="w-full whitespace-nowrap">
+          <table id="siswaTable" className="w-full whitespace-nowrap">
             <thead>
               <tr className="border-gray-200">
                 <th className="px-4 py-2 text-left border">No</th>
                 <th className="px-4 py-2 text-left border">NIS</th>
                 <th className="px-4 py-2 text-left border">Nama Siswa</th>
-                <th className="px-4 py-2 text-left border">Actions</th>
+                <th className="px-4 py-2 text-left border no-print">Actions</th>
               </tr>
             </thead>
 
@@ -151,12 +176,12 @@ const ListSiswaByKelasView = () => {
                   <td className="px-4 py-2 text-left border">
                     {skip + index + 1}
                   </td>
-                  <td className="px-4 py-2 text-left border">{siswa.nis}</td>
-                  <td className="px-4 py-2 text-left border">{siswa.nama}</td>
-                  <td className="px-4 py-2 text-left border">
+                  <td className="px-4 py-2 text-left border">{siswa?.nis}</td>
+                  <td className="px-4 py-2 text-left border">{siswa?.nama}</td>
+                  <td className="px-4 py-2 text-left border no-print">
                     <div className="flex items-center gap-3">
                       <Link
-                        href={`/list/siswa/${siswa.id}`}
+                        href={`/list/siswa/${siswa?.id}`}
                         className="text-green-500 hover:text-green-700"
                       >
                         <FaEye />

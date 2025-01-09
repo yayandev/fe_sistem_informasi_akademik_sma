@@ -27,7 +27,7 @@ const ListJadwalView = () => {
     reset,
   }: any = useForm();
 
-  const fetchMapel = async () => {
+  const fetchJadwal = async () => {
     try {
       setLoading(true);
       let response;
@@ -66,7 +66,7 @@ const ListJadwalView = () => {
   };
 
   useEffect(() => {
-    fetchMapel();
+    fetchJadwal();
   }, [take, skip]);
 
   if (loading) return <Loading />;
@@ -83,7 +83,7 @@ const ListJadwalView = () => {
   const handleSearch = (e: any) => {
     e.preventDefault();
     setSkip(0); // Reset to first page for search results
-    fetchMapel();
+    fetchJadwal();
   };
 
   const handleDeleteMapel = async (id: number) => {
@@ -103,7 +103,7 @@ const ListJadwalView = () => {
       if (response.status === 200) {
         setAlertMessage(result.message);
         setAlertType("success");
-        fetchMapel();
+        fetchJadwal();
       } else {
         setAlertMessage(result.message);
         setAlertType("error");

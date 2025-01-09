@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/useAuth";
+import Link from "next/link";
 
 const DashboardGuruView = () => {
   const { user }: any = useAuth();
@@ -25,6 +26,21 @@ const DashboardGuruView = () => {
             dapat menggunakan fitur-fitur yang tersedia untuk mengelola data
             akademik Anda.
           </p>
+
+          <div className="flex gap-3">
+            <Link
+              href={"/list/guru/absensi_me"}
+              className="bg-blue-400 hover:opacity-75 text-white font-bold py-2 px-4 rounded"
+            >
+              Absensi
+            </Link>
+            <Link
+              href={"/jadwal_guru"}
+              className="bg-green-400 hover:opacity-75 text-white font-bold py-2 px-4 rounded"
+            >
+              Jadwal
+            </Link>
+          </div>
         </div>
       </div>
     </div>
