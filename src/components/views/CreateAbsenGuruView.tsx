@@ -3,6 +3,7 @@ import { useAuth } from "@/context/useAuth";
 import { useEffect, useState } from "react";
 import Loading from "../Loading";
 import { useForm } from "react-hook-form";
+import Link from "next/link";
 
 const CreateAbsenGuruView = () => {
   const [gurus, setGurus] = useState<any>([]);
@@ -134,23 +135,25 @@ const CreateAbsenGuruView = () => {
               </label>
               <select
                 id="guru"
+                defaultValue=""
                 {...register("guruId", {
                   required: {
                     value: true,
                     message: "Guru harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
               >
-                <option value="" disabled selected>
+                <option value="" disabled>
                   Pilih Guru
                 </option>
-                {gurus.map((guru: any) => (
+                {gurus?.map((guru: any) => (
                   <option key={guru.id} value={guru.id}>
                     {guru.nama}
                   </option>
                 ))}
               </select>
+
               {errors.guruId && (
                 <span className="text-red-500 text-sm">
                   {errors.guruId.message}
@@ -162,8 +165,8 @@ const CreateAbsenGuruView = () => {
                 Kelas
               </label>
               <select
-                name="kelas"
                 id="kelas"
+                defaultValue={user?.siswa.kelas.id || ""}
                 disabled
                 {...register("kelasId", {
                   required: {
@@ -171,25 +174,16 @@ const CreateAbsenGuruView = () => {
                     message: "Kelas harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
               >
-                <option value="" disabled selected>
-                  Pilih Kelas
-                </option>
-
-                {kelas.map((kelas: any) => (
-                  // checked ={kelas.id === data?.kelas?.id}
-                  <option
-                    key={kelas.id}
-                    value={kelas.id}
-                    selected={
-                      kelas.id === user?.siswa.kelas.id ? true : undefined
-                    }
-                  >
+                <option value="">Pilih Kelas</option>
+                {kelas?.map((kelas: any) => (
+                  <option key={kelas.id} value={kelas.id}>
                     {kelas.nama}
                   </option>
                 ))}
               </select>
+
               {errors.kelasId && (
                 <span className="text-red-500 text-sm">
                   {errors.kelasId.message}
@@ -210,13 +204,11 @@ const CreateAbsenGuruView = () => {
                     message: "Mata Pelajaran harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
               >
-                <option value="" disabled selected>
-                  Pilih Mata Pelajaran
-                </option>
+                <option value="">Pilih Mata Pelajaran</option>
 
-                {mapels.map((mapel: any) => (
+                {mapels?.map((mapel: any) => (
                   <option key={mapel.id} value={mapel.id}>
                     {mapel.nama_mapel}
                   </option>
@@ -241,11 +233,9 @@ const CreateAbsenGuruView = () => {
                     message: "Status harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
               >
-                <option value="" disabled selected>
-                  Pilih Status
-                </option>
+                <option value="">Pilih Status</option>
                 <option value="hadir">Hadir</option>
                 <option value="sakit">Sakit</option>
                 <option value="izin">Izin</option>
@@ -270,11 +260,9 @@ const CreateAbsenGuruView = () => {
                     message: "Jam Mulai harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
               >
-                <option value="" disabled selected>
-                  Pilih Jam
-                </option>
+                <option value="">Pilih Jam</option>
                 {Array.from({ length: 10 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     Jam ke {index + 1}
@@ -299,11 +287,9 @@ const CreateAbsenGuruView = () => {
                     message: "Jam Selesai harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
               >
-                <option value="" disabled selected>
-                  Pilih Jam
-                </option>
+                <option value="">Pilih Jam</option>
                 {Array.from({ length: 10 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     Jam ke {index + 1}
@@ -330,7 +316,7 @@ const CreateAbsenGuruView = () => {
                     message: "Tanggal harus dipilih",
                   },
                 })}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
                 readOnly
                 value={new Date().toISOString().split("T")[0]}
               />
@@ -348,19 +334,27 @@ const CreateAbsenGuruView = () => {
                 name="keterangan"
                 id="keterangan"
                 {...register("keterangan")}
-                className="w-full p-2 border border-gray-300 focus:outline-lamaPurple rounded-md"
+                className="w-full p-2 border border-gray-300 focus:outline-blue-400 rounded-md"
                 placeholder="Keterangan"
                 rows={3}
               ></textarea>
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="py-2 px-4 rounded-md bg-lamaPurple text-white"
-          >
-            {isSubmitting ? "Menyimpan..." : "Simpan"}
-          </button>
+          <div className="flex gap-3 items-center">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="py-2 px-4 rounded-md bg-blue-400 text-white"
+            >
+              {isSubmitting ? "Menyimpan..." : "Simpan"}
+            </button>
+            <Link
+              href={"/dashboard"}
+              className="py-2 px-4 rounded-md bg-gray-400 text-white"
+            >
+              Kembali
+            </Link>
+          </div>
         </form>
       </div>
     </div>

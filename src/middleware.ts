@@ -11,10 +11,6 @@ export async function middleware(request: NextRequest) {
   const isAdminPath = adminPath.some((adminRoute) => adminRoute === path);
   const isPublicPath = publicPath.some((publicRoute) => publicRoute === path);
 
-  if (path === "/") {
-    return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
-  }
-
   // Ambil token dari cookie
   const token = request.cookies.get("token")?.value;
 
@@ -27,42 +23,51 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  try {
-    // Request ke API untuk mendapatkan role
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+  if (path === "/" && token) {
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+  }
 
-    if (res.ok) {
-      const data = await res.json();
-      const role = data.data.user.role;
+  if (isAdminPath && token) {
+    try {
+      // Request ke API untuk mendapatkan role
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      // Logika role berdasarkan jalur
-      if (isAdminPath && role !== "admin") {
-        return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+      if (res.ok) {
+        const data = await res.json();
+        const role = data.data.user.role;
+
+        // Logika role berdasarkan jalur
+        if (role !== "admin") {
+          return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+        }
+      } else {
+        // Buat response untuk menghapus token
+        const response = NextResponse.redirect(
+          new URL("/login", request.nextUrl)
+        );
+        response.cookies.delete("token");
+        return response;
       }
-
-      if (isPublicPath && role) {
-        return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
-      }
-    } else {
-      // Jika token tidak valid, arahkan ke login
+    } catch (error) {
+      console.error("Error fetching role:", error);
       return NextResponse.redirect(new URL("/login", request.nextUrl));
     }
-  } catch (error) {
-    console.error("Error fetching role:", error);
-    return NextResponse.redirect(new URL("/login", request.nextUrl));
   }
 
   // Izinkan permintaan jika semua kondisi terpenuhi
   return NextResponse.next();
 }
 
-// Configurasi matcher untuk mencocokkan jalur
+// Konfigurasi matcher untuk mencocokkan jalur
 export const config = {
-  matcher: ["/", "/dashboard", "/login", "/gurus", "/siswas", "/logout"],
+  matcher: ["/", "/dashboard", "/login", "/logout", "/list/:path*"],
 };

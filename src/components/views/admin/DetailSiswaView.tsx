@@ -114,38 +114,42 @@ function DetailSiswaView({ id }: any) {
         {activeTab === "dataSiswa" && (
           <div className="overflow-x-auto space-y-3">
             <table className="w-full whitespace-nowrap md:w-3/4">
-              <tr>
-                <th className="p-4 border text-left">Nama</th>
-                <th className="p-4 border text-left">{dataSiswa?.nama}</th>
-              </tr>
-              <tr>
-                <th className="p-4 border text-left">Jenis Kelamin</th>
-                <th className="p-4 border text-left">
-                  {dataSiswa?.jenis_kelamin}
-                </th>
-              </tr>
-              <tr>
-                <th className="p-4 border text-left">NIS</th>
-                <th className="p-4 border text-left">{dataSiswa?.nis}</th>
-              </tr>
-              <tr>
-                <th className="p-4 border text-left">Email</th>
-                <th className="p-4 border text-left">{dataSiswa?.email}</th>
-              </tr>
-              <tr>
-                <th className="p-4 border text-left">No Telp</th>
-                <th className="p-4 border text-left">{dataSiswa?.no_telp}</th>
-              </tr>
-              <tr>
-                <th className="p-4 border text-left">Alamat</th>
-                <th className="p-4 border text-left">{dataSiswa?.alamat}</th>
-              </tr>
-              <tr>
-                <th className="p-4 border text-left">Kelas</th>
-                <th className="p-4 border text-left">
-                  {dataSiswa?.kelas.nama}
-                </th>
-              </tr>
+              <thead>
+                <tr>
+                  <th className="p-4 border text-left">Nama</th>
+                  <th className="p-4 border text-left">{dataSiswa?.nama}</th>
+                </tr>
+                <tr>
+                  <th className="p-4 border text-left">Jenis Kelamin</th>
+                  <th className="p-4 border text-left">
+                    {dataSiswa?.jenis_kelamin}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th className="p-4 border text-left">NIS</th>
+                  <th className="p-4 border text-left">{dataSiswa?.nis}</th>
+                </tr>
+                <tr>
+                  <th className="p-4 border text-left">Email</th>
+                  <th className="p-4 border text-left">{dataSiswa?.email}</th>
+                </tr>
+                <tr>
+                  <th className="p-4 border text-left">No Telp</th>
+                  <th className="p-4 border text-left">{dataSiswa?.no_telp}</th>
+                </tr>
+                <tr>
+                  <th className="p-4 border text-left">Alamat</th>
+                  <th className="p-4 border text-left">{dataSiswa?.alamat}</th>
+                </tr>
+                <tr>
+                  <th className="p-4 border text-left">Kelas</th>
+                  <th className="p-4 border text-left">
+                    {dataSiswa?.kelas.nama}
+                  </th>
+                </tr>
+              </tbody>
             </table>
           </div>
         )}

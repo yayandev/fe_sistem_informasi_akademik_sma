@@ -4,10 +4,18 @@ export const metadata = {
   title: "Detail Siswa",
 };
 
-const DetailSiswaPage = ({ params }: { params: { id: string } }) => {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+const DetailSiswaPage = async ({ params }: PageProps) => {
+  const resolvedParams = await params;
+
   return (
     <>
-      <DetailSiswaView id={params.id} />
+      <DetailSiswaView id={resolvedParams?.id} />
     </>
   );
 };

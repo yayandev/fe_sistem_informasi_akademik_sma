@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         router.push("/login");
       } else {
-        console.error(`Error ${res.status}: ${res.statusText}`);
+        console.log(`Error ${res.status}: ${res.statusText}`);
       }
     } catch (error) {
       console.error("Fetch error:", error);

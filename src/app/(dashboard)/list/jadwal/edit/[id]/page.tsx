@@ -4,10 +4,18 @@ export const metadata = {
   title: "Edit Mapel",
 };
 
-const EditJadwalPage = ({ params }: { params: { id: string } }) => {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+const EditJadwalPage = async ({ params }: PageProps) => {
+  const resolvedParams = await params;
+
   return (
     <>
-      <EditJadwalView id={params.id} />
+      <EditJadwalView id={resolvedParams.id} />
     </>
   );
 };

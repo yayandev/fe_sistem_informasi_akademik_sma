@@ -2,6 +2,7 @@
 import { setCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 const LoginView = () => {
   const {
@@ -11,6 +12,8 @@ const LoginView = () => {
     reset,
     setError,
   }: any = useForm();
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState("");
 
   const router = useRouter();
 
@@ -34,6 +37,8 @@ const LoginView = () => {
           sameSite: "lax",
           path: "/",
         });
+        setAlertMessage("Login Berhasil!");
+        setAlertType("success");
         router.push("/dashboard");
       } else {
         const response = await res.json();
@@ -69,6 +74,15 @@ const LoginView = () => {
           <p className="text-sm text-gray-500 text-center">
             Silahkan Login Untuk Melanjutkan
           </p>
+          {alertMessage && (
+            <div
+              className={`${
+                alertType === "success" ? "bg-green-100" : "bg-red-100"
+              } px-3 py-2 text-sm rounded-md text-center font-semibold mb-4`}
+            >
+              {alertMessage}
+            </div>
+          )}
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="w-full p-5 md:p-0 md:w-1/2 flex flex-col gap-3"

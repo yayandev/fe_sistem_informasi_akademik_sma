@@ -51,45 +51,51 @@ const DetailKelasView = ({ id }: any) => {
       <div className="bg-white p-4 rounded-md space-y-2">
         <h3 className="text-sm font-semibold">Data Kelas</h3>
         <table className="w-full md:w-1/2">
-          <tr>
-            <th className="px-4 py-2 text-left border border-gray-200">ID</th>
-            <td className="px-4 py-2 text-left border border-gray-200">{id}</td>
-          </tr>
-          <tr>
-            <th className="px-4 py-2 text-left border border-gray-200">
-              Nama Kelas
-            </th>
-            <td className="px-4 py-2 text-left border border-gray-200">
-              {data?.nama}
-            </td>
-          </tr>
-          <tr>
-            <th className="px-4 py-2 text-left border border-gray-200">
-              Wali Kelas
-            </th>
-            <td className="px-4 py-2 text-left border border-gray-200">
-              {data?.waliKelas ? data?.waliKelas?.name : "-"}
-            </td>
-          </tr>
-          <tr>
-            <th className="px-4 py-2 text-left border border-gray-200">
-              Ketua Kelas
-            </th>
-            <td className="px-4 py-2 text-left border border-gray-200">
-              {data?.ketuaKelasId
-                ? data?.siswas.find((s: any) => s.id === data?.ketuaKelasId)
-                    ?.nama
-                : "-"}
-            </td>
-          </tr>
-          <tr>
-            <th className="px-4 py-2 text-left border border-gray-200">
-              Jumlah Siswa
-            </th>
-            <td className="px-4 py-2 text-left border border-gray-200">
-              {data?.siswas.length}
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th className="px-4 py-2 text-left border border-gray-200">ID</th>
+              <td className="px-4 py-2 text-left border border-gray-200">
+                {id}
+              </td>
+            </tr>
+            <tr>
+              <th className="px-4 py-2 text-left border border-gray-200">
+                Nama Kelas
+              </th>
+              <td className="px-4 py-2 text-left border border-gray-200">
+                {data?.nama}
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th className="px-4 py-2 text-left border border-gray-200">
+                Wali Kelas
+              </th>
+              <td className="px-4 py-2 text-left border border-gray-200">
+                {data?.waliKelas ? data?.waliKelas?.name : "-"}
+              </td>
+            </tr>
+            <tr>
+              <th className="px-4 py-2 text-left border border-gray-200">
+                Ketua Kelas
+              </th>
+              <td className="px-4 py-2 text-left border border-gray-200">
+                {data?.ketuaKelasId
+                  ? data?.siswas.find((s: any) => s.id === data?.ketuaKelasId)
+                      ?.nama
+                  : "-"}
+              </td>
+            </tr>
+            <tr>
+              <th className="px-4 py-2 text-left border border-gray-200">
+                Jumlah Siswa
+              </th>
+              <td className="px-4 py-2 text-left border border-gray-200">
+                {data?.siswas.length}
+              </td>
+            </tr>
+          </tbody>
         </table>
         <h3 className="text-sm font-semibold">Data Siswa</h3>
         <table className="w-full">

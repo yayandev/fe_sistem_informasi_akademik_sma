@@ -4,10 +4,17 @@ export const metadata = {
   title: "Edit Kelas",
 };
 
-const EditKelasPage = ({ params }: { params: { id: string } }) => {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+const EditKelasPage = async ({ params }: PageProps) => {
+  const resolvedParams = await params;
   return (
     <>
-      <EditKelasView id={params.id} />
+      <EditKelasView id={resolvedParams.id} />
     </>
   );
 };
