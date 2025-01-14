@@ -38,7 +38,9 @@ const ListAbsensiSiswaView = () => {
         }
       );
       const result = await response.json();
-      setDataKelas(result.data);
+      if (response.status === 200) {
+        setDataKelas(result.data);
+      }
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -77,8 +79,10 @@ const ListAbsensiSiswaView = () => {
       });
 
       const result = await response.json();
-      setData(result.data.absensiSiswa);
-      setTotal(result.data.total);
+      if (response.status === 200) {
+        setData(result.data.absensiSiswa);
+        setTotal(result.data.total);
+      }
       setLoading(false);
     } catch (error) {
       console.error("Fetch error:", error);

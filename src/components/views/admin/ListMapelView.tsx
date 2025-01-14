@@ -65,8 +65,10 @@ const ListMapelView = () => {
         );
       }
       const result = await response.json();
-      setData(result.data);
-      setTotal(result.data.total || 0); // Handle total for search results
+      if (response.status === 200) {
+        setData(result.data);
+        setTotal(result.data.total || 0); // Handle total for search results
+      }
       setLoading(false);
     } catch (error) {
       console.error("Fetch error:", error);

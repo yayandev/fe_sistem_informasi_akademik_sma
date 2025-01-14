@@ -77,8 +77,10 @@ const ListAbsensiGuruView = () => {
       });
 
       const result = await response.json();
-      setData(result.data.absensiGuru);
-      setTotal(result.data.total);
+      if (response.status === 200) {
+        setData(result.data.absensiGuru);
+        setTotal(result.data.total);
+      }
       setLoading(false);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -240,7 +242,7 @@ const ListAbsensiGuruView = () => {
             </thead>
 
             <tbody>
-              {data.map((item: any, index: number) => (
+              {data?.map((item: any, index: number) => (
                 <tr key={index} className="border-gray-200">
                   <td className="px-4 py-2 text-left border">
                     {skip + index + 1}
