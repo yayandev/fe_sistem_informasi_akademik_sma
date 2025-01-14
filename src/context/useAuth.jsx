@@ -35,13 +35,16 @@ export const AuthProvider = ({ children }) => {
             }
           );
 
-          if (res.ok) {
+          if (res.status === 200) {
             const data = await res.json();
             setUser(data.data?.user);
             setToken(token);
-          } else {
+          } else if (res.status === 400) {
             console.error(`Error ${res.status}: ${res.statusText}`);
+            setToken(null);
             setUser(null);
+            deleteCookie("token");
+            router.push("/login");
           }
         } catch (error) {
           console.error("Fetch error:", error);

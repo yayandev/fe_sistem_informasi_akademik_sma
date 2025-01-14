@@ -19,7 +19,12 @@ const DashboardGuruView = () => {
             Selamat Datang <strong>{user?.name}</strong>
           </h1>
           <p className="text-sm text-gray-500">
-            Kamu login sebagai <strong>{user?.role}</strong>.
+            Kamu login sebagai{" "}
+            <strong>
+              {user?.role}{" "}
+              {user?.kelas && " & wali kelas - " + user?.kelas.nama}
+            </strong>
+            .
           </p>
           <p className="text-sm text-gray-500">
             Selamat datang di Sistem Informasi Akademik Sekolah. Di sini, Anda

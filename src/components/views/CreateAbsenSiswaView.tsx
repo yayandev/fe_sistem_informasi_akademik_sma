@@ -110,7 +110,7 @@ const CreateAbsenSiswaView = () => {
           {message}
         </div>
       )}
-      {user?.siswa.id === user?.siswa.kelas.ketuaKelasId ? (
+      {user && user?.siswa.id === user?.siswa.kelas.ketuaKelasId ? (
         <div className="bg-white p-4 rounded-md w-full box-border">
           <div className="flex flex-col-reverse md:flex-row items-start gap-3 justify-between">
             <table className="w-full md:w-1/2 overflow-x-auto">
@@ -215,13 +215,19 @@ const CreateAbsenSiswaView = () => {
       ) : (
         <div className="bg-white p-4 rounded-md w-full box-border">
           <div className="flex justify-center">
-            <div className="space-y-1">
+            <div className="space-y-3 text-center">
               <h3 className="text-center font-semibold text-red-500">
                 Kamu Bukan Ketua Kelas!
               </h3>
               <p className="text-center text-gray-500 text-xs">
                 Hubungi Ketua Kelas Untuk Melakukan Absensi!
               </p>
+              <Link
+                href={"/dashboard"}
+                className="py-2 px-4 bg-lamaSky text-white rounded-md inline-block"
+              >
+                Kembali
+              </Link>
             </div>
           </div>
         </div>

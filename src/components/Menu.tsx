@@ -52,6 +52,12 @@ const menuItems = [
         icon: "/calendar.png",
       },
       {
+        label: "Tahun Ajaran",
+        href: "/list/tahun_ajaran",
+        visible: ["admin"],
+        icon: "/lesson.png",
+      },
+      {
         label: "Jadwal",
         href: "/jadwal_siswa",
         visible: ["siswa"],
@@ -90,6 +96,12 @@ const menuItems = [
       {
         label: "Data Absensi Anda",
         href: "/list/guru/absensi_me",
+        visible: ["guru"],
+        icon: "/lesson.png",
+      },
+      {
+        label: "Data Nilai Siswa",
+        href: "/list/guru/nilai_siswa",
         visible: ["guru"],
         icon: "/lesson.png",
       },
