@@ -270,45 +270,46 @@ const ListKelasView = () => {
             </thead>
 
             <tbody>
-              {data?.kelas.map((item: any, index: number) => (
-                <tr key={index} className="border-gray-200">
-                  <td className="px-4 py-2 text-left border">
-                    {skip + index + 1}
-                  </td>
-                  <td className="px-4 py-2 text-left border">{item.nama}</td>
-                  <td className="px-4 py-2 text-left border">
-                    {item.waliKelas ? item?.waliKelas?.name : "-"}
-                  </td>
-                  <td className="px-4 py-2 text-left border">
-                    {item.createdAt.split("T")[0]}
-                  </td>
-                  <td className="px-4 py-2 text-left border">
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/list/kelas/${item.id}`}
-                        className="text-green-500 hover:text-green-700"
-                      >
-                        <FaEye />
-                      </Link>
-                      <Link
-                        href={`/list/kelas/edit/${item.id}`}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <FaPencilAlt />
-                      </Link>
-                      <button
-                        onClick={() =>
-                          confirm("Apakah anda yakin mau menghapus?") &&
-                          handleDeleteKelas(item.id)
-                        }
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {data &&
+                data?.kelas.map((item: any, index: number) => (
+                  <tr key={index} className="border-gray-200">
+                    <td className="px-4 py-2 text-left border">
+                      {skip + index + 1}
+                    </td>
+                    <td className="px-4 py-2 text-left border">{item.nama}</td>
+                    <td className="px-4 py-2 text-left border">
+                      {item.waliKelas ? item?.waliKelas?.name : "-"}
+                    </td>
+                    <td className="px-4 py-2 text-left border">
+                      {item.createdAt.split("T")[0]}
+                    </td>
+                    <td className="px-4 py-2 text-left border">
+                      <div className="flex items-center gap-3">
+                        <Link
+                          href={`/list/kelas/${item.id}`}
+                          className="text-green-500 hover:text-green-700"
+                        >
+                          <FaEye />
+                        </Link>
+                        <Link
+                          href={`/list/kelas/edit/${item.id}`}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <FaPencilAlt />
+                        </Link>
+                        <button
+                          onClick={() =>
+                            confirm("Apakah anda yakin mau menghapus?") &&
+                            handleDeleteKelas(item.id)
+                          }
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

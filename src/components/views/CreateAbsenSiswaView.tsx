@@ -1,5 +1,4 @@
 "use client";
-
 import { useAuth } from "@/context/useAuth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -44,6 +43,17 @@ const CreateAbsenSiswaView = () => {
 
     fetchData();
   }, [user, token]);
+
+  const handleSelectAll = (status: string) => {
+    data?.kelas?.siswas?.forEach((siswa: any) => {
+      const radioInput: any = document.querySelector(
+        `input[name="absensi_${siswa.id}"][value="${status}"]`
+      );
+      if (radioInput) {
+        radioInput.checked = true;
+      }
+    });
+  };
 
   const generateAbsensiData = () => {
     const absensiData = data?.kelas?.siswas?.map((siswa: any) => {
@@ -143,58 +153,84 @@ const CreateAbsenSiswaView = () => {
               </tbody>
             </table>
           </div>
-          <table className="w-full mt-4 border-collapse border border-gray-200 overflow-x-auto box-border">
-            <thead>
-              <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="border border-gray-200 p-2 text-start">Nama</th>
-                <th className="border border-gray-200 p-2 text-start">NIS</th>
-                <th className="border border-gray-200 p-2">Absensi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.kelas?.siswas?.map((siswa: any) => (
-                <tr
-                  key={siswa.id}
-                  className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-                >
-                  <td className="border border-gray-200 p-2 text-start">
-                    {siswa.nama}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-start">
-                    {siswa.nis}
-                  </td>
-                  <td className="border border-gray-200 p-2">
-                    <div className="flex space-x-4 justify-center">
-                      <label>
-                        <input
-                          type="radio"
-                          name={`absensi_${siswa.id}`}
-                          value="hadir"
-                        />
-                        Hadir
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`absensi_${siswa.id}`}
-                          value="ijin"
-                        />
-                        Ijin
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`absensi_${siswa.id}`}
-                          value="alpa"
-                        />
-                        Alpa
-                      </label>
-                    </div>
-                  </td>
+          <div className="flex justify-end gap-3 items-center mt-3">
+            <button
+              type="button"
+              onClick={() => handleSelectAll("hadir")}
+              className="py-2 px-4 bg-green-400 text-white rounded-md text-xs md:text-sm"
+            >
+              Pilih Hadir Semua
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelectAll("ijin")}
+              className="py-2 px-4 bg-yellow-400 text-white rounded-md text-xs md:text-sm"
+            >
+              Pilih Ijin Semua
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelectAll("alpa")}
+              className="py-2 px-4 bg-red-400 text-white rounded-md text-xs md:text-sm"
+            >
+              Pilih Alpa Semua
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full mt-4 border-collapse border border-gray-200 overflow-x-auto box-border whitespace-nowrap">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  <th className="border border-gray-200 p-2 text-start">No</th>
+                  <th className="border border-gray-200 p-2 text-start">NIS</th>
+                  <th className="border border-gray-200 p-2 text-start">
+                    Nama
+                  </th>
+                  <th className="border border-gray-200 p-2">Hadir</th>
+                  <th className="border border-gray-200 p-2">Ijin</th>
+                  <th className="border border-gray-200 p-2">Alpa</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data?.kelas?.siswas?.map((siswa: any, index: number) => (
+                  <tr
+                    key={siswa.id}
+                    className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+                  >
+                    <td className="border border-gray-200 p-2 text-start">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-200 p-2 text-start">
+                      {siswa.nis}
+                    </td>
+                    <td className="border border-gray-200 p-2 text-start">
+                      {siswa.nama}
+                    </td>
+                    <td className="border border-gray-200 p-2 text-center">
+                      <input
+                        type="radio"
+                        name={`absensi_${siswa.id}`}
+                        value="hadir"
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-2 text-center">
+                      <input
+                        type="radio"
+                        name={`absensi_${siswa.id}`}
+                        value="ijin"
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-2 text-center">
+                      <input
+                        type="radio"
+                        name={`absensi_${siswa.id}`}
+                        value="alpa"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="flex justify-end gap-3 items-center mt-3">
             <Link

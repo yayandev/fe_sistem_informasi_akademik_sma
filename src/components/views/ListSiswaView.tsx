@@ -85,6 +85,27 @@ const ListSiswaView = () => {
     fetchSiswa();
   };
 
+  const handleDelete = async (id: any) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/siswas/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await response.json();
+      if (response.status === 200) {
+        fetchSiswa();
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
+  };
+
   return (
     <div className="p-4 w-full space-y-3">
       <h1 className="text-xl font-semibold">Data Siswa</h1>
@@ -164,36 +185,46 @@ const ListSiswaView = () => {
             </thead>
 
             <tbody>
-              {data?.siswas.map((siswa: any, index: number) => (
-                <tr key={index} className="border-gray-200">
-                  <td className="px-4 py-2 text-left border">
-                    {skip + index + 1}
-                  </td>
-                  <td className="px-4 py-2 text-left border">{siswa.nis}</td>
-                  <td className="px-4 py-2 text-left border">{siswa.nama}</td>
-                  <td className="px-4 py-2 text-left border">
-                    <span className="px-2 text-xs py-1 bg-green-200 rounded">
-                      {siswa.kelas.nama ? siswa.kelas.nama : "-"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-left border">
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/list/siswa/${siswa.id}`}
-                        className="text-green-500 hover:text-green-700"
-                      >
-                        <FaEye />
-                      </Link>
-                      <button className="text-blue-500 hover:text-blue-700">
-                        <FaPencilAlt />
-                      </button>
-                      <button className="text-red-500 hover:text-red-700">
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {data &&
+                data?.siswas.map((siswa: any, index: number) => (
+                  <tr key={index} className="border-gray-200">
+                    <td className="px-4 py-2 text-left border">
+                      {skip + index + 1}
+                    </td>
+                    <td className="px-4 py-2 text-left border">{siswa.nis}</td>
+                    <td className="px-4 py-2 text-left border">{siswa.nama}</td>
+                    <td className="px-4 py-2 text-left border">
+                      <span className="px-2 text-xs py-1 bg-green-200 rounded">
+                        {siswa.kelas.nama ? siswa.kelas.nama : "-"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-left border">
+                      <div className="flex items-center gap-3">
+                        <Link
+                          href={`/list/siswa/${siswa.id}`}
+                          className="text-green-500 hover:text-green-700"
+                        >
+                          <FaEye />
+                        </Link>
+                        <Link
+                          href={`/list/siswa/edit/${siswa.id}`}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <FaPencilAlt />
+                        </Link>
+                        <button
+                          onClick={() =>
+                            confirm("Apakah anda yakin?") &&
+                            handleDelete(siswa.id)
+                          }
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

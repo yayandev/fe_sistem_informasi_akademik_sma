@@ -164,7 +164,7 @@ const ListAbsensiGuruView = () => {
                 className="py-1 px-2 border rounded"
               >
                 <option value="">Semua</option>
-                {dataKelas.map((item: any) => (
+                {dataKelas?.map((item: any) => (
                   <option key={item.id} value={item.id}>
                     {item.nama}
                   </option>

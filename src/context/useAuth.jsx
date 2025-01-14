@@ -43,8 +43,8 @@ export const AuthProvider = ({ children }) => {
             console.error(`Error ${res.status}: ${res.statusText}`);
             setToken(null);
             setUser(null);
-            deleteCookie("token");
-            router.push("/login");
+          } else {
+            console.error(`Error ${res.status}: ${res.statusText}`);
           }
         } catch (error) {
           console.error("Fetch error:", error);

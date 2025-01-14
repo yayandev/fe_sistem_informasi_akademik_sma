@@ -69,7 +69,7 @@ const JadwalSiswaView = () => {
             </thead>
             <tbody>
               ${data
-                .map(
+                ?.map(
                   (item: any, index: number) => `
                 <tr>
                   <td style="border: 1px solid #000; padding: 12px;">${

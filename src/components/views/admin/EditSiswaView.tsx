@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const CreateSiswaView = () => {
+const EditSiswaView = ({ id }: any) => {
   const [loading, setLoading] = useState(false);
   const [kelas, setKelas] = useState([]);
   const { token } = useAuth();
@@ -15,12 +15,42 @@ const CreateSiswaView = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   }: any = useForm();
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
+  const fetchSiswa = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/siswas/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await response.json();
+      if (response.status === 200) {
+        let data = result.data;
+        setValue("nis", data.nis);
+        setValue("nama", data.nama);
+        setValue("tempat_lahir", data.tempat_lahir);
+        setValue("tanggal_lahir", data.tanggal_lahir);
+        setValue("jenis_kelamin", data.jenis_kelamin);
+        setValue("kelasId", data.kelasId);
+        setValue("alamat", data.alamat);
+        setValue("no_telp", data.no_telp);
+        setValue("email", data.email);
+      }
+    } catch (error) {
+      console.log(error);
+      console.error("Fetch error:", error);
+    }
+  };
 
   const fetchKelas = async () => {
-    setLoading(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/kelas/all`,
@@ -33,10 +63,22 @@ const CreateSiswaView = () => {
         }
       );
       const result = await response.json();
-      setKelas(result.data);
+      if (response.status === 200) {
+        setKelas(result.data);
+      }
     } catch (error) {
       console.log(error);
       console.error("Fetch error:", error);
+    }
+  };
+
+  const fetchAll = async () => {
+    setLoading(true);
+    try {
+      await fetchSiswa();
+      await fetchKelas();
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -44,7 +86,7 @@ const CreateSiswaView = () => {
 
   useEffect(() => {
     if (token) {
-      fetchKelas();
+      fetchAll();
     }
   }, [token]);
 
@@ -54,9 +96,9 @@ const CreateSiswaView = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/siswas/create`,
+        `${process.env.NEXT_PUBLIC_API_URL}/siswas/update/${id}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -67,9 +109,7 @@ const CreateSiswaView = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setAlertMessage(
-          `${result.message}, Password default (${result.data.defaultPassword})`
-        );
+        setAlertMessage(result.message);
         setAlertType("success");
         reset();
       } else {
@@ -77,7 +117,7 @@ const CreateSiswaView = () => {
         setAlertType("error");
       }
     } catch (error) {
-      setAlertMessage("Terjadi kesalahan saat membuat siswa.");
+      setAlertMessage("Terjadi kesalahan saat edit siswa.");
       setAlertType("error");
     } finally {
       setLoading(false);
@@ -85,7 +125,7 @@ const CreateSiswaView = () => {
   };
   return (
     <div className="p-4 w-full space-y-3">
-      <h1 className="text-xl font-semibold">Buat Siswa</h1>
+      <h1 className="text-xl font-semibold">Edit Siswa</h1>
 
       {alertMessage && (
         <div
@@ -308,4 +348,4 @@ const CreateSiswaView = () => {
   );
 };
 
-export default CreateSiswaView;
+export default EditSiswaView;

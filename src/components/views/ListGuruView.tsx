@@ -21,8 +21,10 @@ const ListGuruView = () => {
   const [take, setTake] = useState(10);
   const [skip, setSkip] = useState(0);
   const [total, setTotal] = useState(0);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [dataShow, setDataShow]: any = useState(null);
 
-  const fetchSiswa = async () => {
+  const fetchGuru = async () => {
     try {
       setLoading(true);
       let response;
@@ -64,7 +66,7 @@ const ListGuruView = () => {
 
   useEffect(() => {
     if (token) {
-      fetchSiswa();
+      fetchGuru();
     }
   }, [token, take, skip]);
 
@@ -82,10 +84,38 @@ const ListGuruView = () => {
   const handleSearch = (e: any) => {
     e.preventDefault();
     setSkip(0); // Reset to first page for search results
-    fetchSiswa();
+    fetchGuru();
   };
 
-  const handleExporExcel = async () => {};
+  const handleShowModalEdit = (guru: any) => {
+    setDataShow(guru);
+    setShowModalEdit(true);
+  };
+
+  const handleDelete = async (id: any) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/gurus/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      const result = await response.json();
+      if (response.status === 200) {
+        fetchGuru();
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="p-4 w-full space-y-3">
@@ -165,29 +195,43 @@ const ListGuruView = () => {
             </thead>
 
             <tbody>
-              {data?.gurus.map((guru: any, index: number) => (
-                <tr key={index} className="border-gray-200">
-                  <td className="px-4 py-2 text-left border">
-                    {skip + index + 1}
-                  </td>
-                  <td className="px-4 py-2 text-left border">{guru.nama}</td>
-                  <td className="px-4 py-2 text-left border">{guru.nip}</td>
-                  <td className="px-4 py-2 text-left border">{guru.no_telp}</td>
-                  <td className="px-4 py-2 text-left border">
-                    <div className="flex items-center gap-3">
-                      <button className="text-green-500 hover:text-green-700">
-                        <FaEye />
-                      </button>
-                      <button className="text-blue-500 hover:text-blue-700">
-                        <FaPencilAlt />
-                      </button>
-                      <button className="text-red-500 hover:text-red-700">
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {data &&
+                data?.gurus.map((guru: any, index: number) => (
+                  <tr key={index} className="border-gray-200">
+                    <td className="px-4 py-2 text-left border">
+                      {skip + index + 1}
+                    </td>
+                    <td className="px-4 py-2 text-left border">{guru.nama}</td>
+                    <td className="px-4 py-2 text-left border">{guru.nip}</td>
+                    <td className="px-4 py-2 text-left border">
+                      {guru.no_telp}
+                    </td>
+                    <td className="px-4 py-2 text-left border">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handleShowModalEdit(guru)}
+                          className="text-green-500 hover:text-green-700"
+                        >
+                          <FaEye />
+                        </button>
+                        <Link
+                          href={`/list/guru/${guru.id}`}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <FaPencilAlt />
+                        </Link>
+                        <button
+                          onClick={() =>
+                            confirm("Are you sure?") && handleDelete(guru.id)
+                          }
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -213,6 +257,90 @@ const ListGuruView = () => {
           </div>
         </div>
       </div>
+
+      {/* modal show */}
+      {showModalEdit && dataShow && (
+        <div
+          className="fixed z-10 inset-0 overflow-y-auto"
+          aria-labelledby="modal-title"
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
+        >
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:pt-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3
+                      className="text-lg leading-6 font-medium text-gray-900"
+                      id="modal-title"
+                    >
+                      Detail Guru
+                    </h3>
+                    <div className="mt-2">
+                      <table className="min-w-full bg-white border border-gray-200">
+                        <tbody>
+                          <tr>
+                            <td className="px-4 py-2 border">Nama</td>
+                            <td className="px-4 py-2 border">
+                              {dataShow.nama}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-2 border">NIP</td>
+                            <td className="px-4 py-2 border">{dataShow.nip}</td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-2 border">Jenis Kelamin</td>
+                            <td className="px-4 py-2 border">
+                              {dataShow.jenis_kelamin}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-2 border">Alamat</td>
+                            <td className="px-4 py-2 border">
+                              {dataShow.alamat}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-2 border">No Telp</td>
+                            <td className="px-4 py-2 border">
+                              {dataShow.no_telp}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-2 border">Email</td>
+                            <td className="px-4 py-2 border">
+                              {dataShow.email}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={() => setShowModalEdit(false)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -6,57 +6,61 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const CreateSiswaView = () => {
+const EditGuruView = ({ id }: any) => {
   const [loading, setLoading] = useState(false);
-  const [kelas, setKelas] = useState([]);
   const { token } = useAuth();
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
+    setValue,
   }: any = useForm();
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
 
-  const fetchKelas = async () => {
-    setLoading(true);
+  const fetchDataGuru = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/kelas/all`,
+        `${process.env.NEXT_PUBLIC_API_URL}/gurus/${id}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );
       const result = await response.json();
-      setKelas(result.data);
+
+      if (response.ok) {
+        setValue("name", result.data.nama);
+        setValue("email", result.data.email);
+        setValue("jenis_kelamin", result.data.jenis_kelamin);
+        setValue("alamat", result.data.alamat);
+        setValue("no_telp", result.data.no_telp);
+      } else {
+        setAlertMessage(result.message);
+        setAlertType("error");
+      }
     } catch (error) {
-      console.log(error);
-      console.error("Fetch error:", error);
+      setAlertMessage("Terjadi kesalahan saat mengambil data guru.");
+      setAlertType("error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (token) {
-      fetchKelas();
-    }
-  }, [token]);
-
-  if (loading) return <Loading />;
+    fetchDataGuru();
+  }, []);
 
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/siswas/create`,
+        `${process.env.NEXT_PUBLIC_API_URL}/gurus/update/${id}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -67,25 +71,25 @@ const CreateSiswaView = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setAlertMessage(
-          `${result.message}, Password default (${result.data.defaultPassword})`
-        );
+        setAlertMessage(result.message);
         setAlertType("success");
-        reset();
       } else {
         setAlertMessage(result.message);
         setAlertType("error");
       }
     } catch (error) {
-      setAlertMessage("Terjadi kesalahan saat membuat siswa.");
+      setAlertMessage("Terjadi kesalahan saat mengupdate data guru.");
       setAlertType("error");
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading) return <Loading />;
+
   return (
     <div className="p-4 w-full space-y-3">
-      <h1 className="text-xl font-semibold">Buat Siswa</h1>
+      <h1 className="text-xl font-semibold">Edit Guru</h1>
 
       {alertMessage && (
         <div
@@ -113,7 +117,7 @@ const CreateSiswaView = () => {
                   type="text"
                   id="name"
                   placeholder="Nama"
-                  {...register("nama", {
+                  {...register("name", {
                     required: {
                       value: true,
                       message: "Nama harus diisi",
@@ -128,12 +132,12 @@ const CreateSiswaView = () => {
                     },
                   })}
                   className={`w-full p-2 border  focus:outline-lamaPurple rounded-md ${
-                    errors.nama ? "border-red-500" : "border-gray-300"
+                    errors.name ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.nama && (
+                {errors.name && (
                   <p className="text-xs text-red-400">
-                    {errors.nama.message.toString()}
+                    {errors.name.message.toString()}
                   </p>
                 )}
               </div>
@@ -235,35 +239,6 @@ const CreateSiswaView = () => {
             <div className="flex flex-col md:flex-row gap-3">
               <div className="space-y-1 w-full">
                 <label htmlFor="name" className="text-sm">
-                  Kelas
-                </label>
-                <select
-                  id="kelas"
-                  {...register("kelasId", {
-                    required: {
-                      value: true,
-                      message: "Kelas harus diisi",
-                    },
-                  })}
-                  className={`w-full p-2 border  focus:outline-lamaPurple rounded-md ${
-                    errors.kelasId ? "border-red-500" : "border-gray-300"
-                  }`}
-                >
-                  <option value="">Pilih Kelas</option>
-                  {kelas?.map((item: any) => (
-                    <option key={item.id} value={item.id}>
-                      {item.nama}
-                    </option>
-                  ))}
-                </select>
-                {errors.kelasId && (
-                  <p className="text-xs text-red-400">
-                    {errors.kelasId.message.toString()}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-1 w-full">
-                <label htmlFor="name" className="text-sm">
                   Alamat
                 </label>
                 <textarea
@@ -295,7 +270,7 @@ const CreateSiswaView = () => {
                 Simpan
               </button>
               <Link
-                href={"/list/siswa"}
+                href={"/list/guru"}
                 className="py-2 px-4 rounded-md bg-gray-400 text-white text-xs font-semibold"
               >
                 Kembali
@@ -308,4 +283,4 @@ const CreateSiswaView = () => {
   );
 };
 
-export default CreateSiswaView;
+export default EditGuruView;
