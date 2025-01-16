@@ -24,6 +24,8 @@ const ListAbsensiGuruView = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [dataKelas, setDataKelas] = useState([]);
+  const [modalShow, setModalShow] = useState(false);
+  const [modalData, setModalData]: any = useState(null);
 
   const fetchKelas = async () => {
     try {
@@ -127,6 +129,32 @@ const ListAbsensiGuruView = () => {
     e.preventDefault();
     setSkip(0);
     fetchGuru();
+  };
+
+  const handleDeleteAbsensi = async (id: any) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/absensi_guru/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.status === 200) {
+        fetchGuru();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -234,9 +262,6 @@ const ListAbsensiGuruView = () => {
                 <th className="px-4 py-2 text-left border">Nama Siswa</th>
                 <th className="px-4 py-2 text-left border">Tanggal</th>
                 <th className="px-4 py-2 text-left border">Status</th>
-                <th className="px-4 py-2 text-left border">Kelas</th>
-                <th className="px-4 py-2 text-left border">Jam Pelajaran</th>
-                <th className="px-4 py-2 text-left border">Mapel</th>
                 <th className="px-4 py-2 text-left border">Actions</th>
               </tr>
             </thead>
@@ -266,34 +291,31 @@ const ListAbsensiGuruView = () => {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-left border">
-                    <span className="px-2 py-1 text-xs text-white rounded bg-blue-400">
-                      {item?.kelas ? item.kelas.nama : "KELAS TIDAK ADA"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-left border">
-                    <span className="px-2 py-1 text-xs text-white rounded bg-red-400">
-                      {item.jam_mulai} - {item.jam_selesai}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-left border">
-                    <span className="px-2 py-1 text-xs text-white rounded bg-yellow-400">
-                      {item.mapel.nama_mapel}
-                    </span>
-                  </td>
 
                   <td className="px-4 py-2 text-left border">
                     <div className="flex items-center gap-3">
-                      <Link
-                        href={`/list/absensi_guru/${item.id}`}
+                      <button
+                        onClick={() => {
+                          setModalData(item);
+                          setModalShow(true);
+                        }}
                         className="text-green-500 hover:text-green-700"
                       >
                         <FaEye />
-                      </Link>
-                      <button className="text-blue-500 hover:text-blue-700">
-                        <FaPencilAlt />
                       </button>
-                      <button className="text-red-500 hover:text-red-700">
+                      <Link
+                        href={`/list/absensi_guru/${item.id}`}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <FaPencilAlt />
+                      </Link>
+                      <button
+                        onClick={() =>
+                          confirm("apakah anda yakin?") &&
+                          handleDeleteAbsensi(item.id)
+                        }
+                        className="text-red-500 hover:text-red-700"
+                      >
                         <FaTrash />
                       </button>
                     </div>
@@ -326,6 +348,98 @@ const ListAbsensiGuruView = () => {
           </div>
         </div>
       </div>
+
+      {/* modal show */}
+      {modalShow && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg md:w-1/2 w-3/4">
+            <h2 className="text-lg font-semibold mb-2">Detail Absensi</h2>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1 w-full">
+                  <label htmlFor="" className="text-sm">
+                    Nama Guru
+                  </label>
+                  <input
+                    type="text"
+                    value={modalData?.guru?.nama}
+                    disabled
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+                <div className="space-y-1 w-full">
+                  <label htmlFor="" className="text-sm">
+                    Tanggal Absen
+                  </label>
+                  <input
+                    type="text"
+                    value={modalData?.tanggal.split("T")[0]}
+                    disabled
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+                <div className="space-y-1 w-full">
+                  <label htmlFor="" className="text-sm">
+                    Status Absen
+                  </label>
+                  <input
+                    type="text"
+                    value={modalData?.status}
+                    disabled
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+                <div className="space-y-1 w-full">
+                  <label htmlFor="" className="text-sm">
+                    Kelas
+                  </label>
+                  <input
+                    type="text"
+                    value={modalData?.kelas?.nama}
+                    disabled
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+                <div className="space-y-1 w-full">
+                  <label htmlFor="" className="text-sm">
+                    Jam Pelajaran
+                  </label>
+                  <input
+                    type="text"
+                    value={
+                      modalData?.jam_mulai + " - " + modalData?.jam_selesai
+                    }
+                    disabled
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+                <div className="space-y-1 w-full">
+                  <label htmlFor="" className="text-sm">
+                    Mapel
+                  </label>
+                  <input
+                    type="text"
+                    value={modalData?.mapel?.nama_mapel}
+                    disabled
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setModalShow(false);
+                setModalData(null);
+              }}
+              className="mt-4 px-4 py-2 bg-gray-400 text-white rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
