@@ -1,5 +1,6 @@
 "use client";
 import { deleteCookie, getCookie } from "cookies-next";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useContext, useEffect, createContext } from "react";
 
@@ -17,6 +18,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const router = useRouter();
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -35,16 +38,27 @@ export const AuthProvider = ({ children }) => {
             }
           );
 
+          if (res.status === 400) {
+            // delete cookie
+            deleteCookie("token");
+            setUser(null);
+            setToken(null);
+            router.push("/login");
+            setLoading(false);
+            return;
+          }
+
           if (res.status === 200) {
             const data = await res.json();
             setUser(data.data?.user);
             setToken(token);
-          } else if (res.status === 400) {
-            console.error(`Error ${res.status}: ${res.statusText}`);
+          } else {
+            console.log(`Error ${res.status}: ${res.statusText}`);
             setToken(null);
             setUser(null);
-          } else {
-            console.error(`Error ${res.status}: ${res.statusText}`);
+            setError(true);
+            const data = await res.json();
+            setErrorMessage(data.message);
           }
         } catch (error) {
           console.error("Fetch error:", error);
@@ -97,6 +111,27 @@ export const AuthProvider = ({ children }) => {
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400"></div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen justify-center items-center">
+        <div className="space-y-3 flex-col gap-3">
+          <img src="/logo.png" alt="" width={80} />
+          <h1 className="text-red-500">{errorMessage}</h1>
+          <button
+            onClick={() => {
+              setError(false);
+              setErrorMessage("");
+              router.refresh();
+            }}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Refresh
+          </button>
         </div>
       </div>
     );

@@ -65,6 +65,9 @@ const ListKelasView = () => {
       if (response.status === 200) {
         setData(result.data);
         setTotal(result.data.total || 0); // Handle total for search results
+      } else {
+        setData([]);
+        setTotal(0);
       }
       setLoading(false);
     } catch (error) {

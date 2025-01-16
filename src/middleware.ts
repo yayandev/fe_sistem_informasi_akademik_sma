@@ -27,6 +27,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
   }
 
+  if (isPublicPath && token) {
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+  }
+
   if (isAdminPath && token) {
     try {
       // Request ke API untuk mendapatkan role
@@ -41,7 +45,16 @@ export async function middleware(request: NextRequest) {
         }
       );
 
-      if (res.ok) {
+      if (res.status === 400) {
+        //delete cookie
+        const response = NextResponse.redirect(
+          new URL("/login", request.nextUrl)
+        );
+        response.cookies.delete("token");
+        return response;
+      }
+
+      if (res.status === 200) {
         const data = await res.json();
         const role = data.data.user.role;
 
@@ -52,9 +65,8 @@ export async function middleware(request: NextRequest) {
       } else {
         // Buat response untuk menghapus token
         const response = NextResponse.redirect(
-          new URL("/login", request.nextUrl)
+          new URL("/500", request.nextUrl)
         );
-        response.cookies.delete("token");
         return response;
       }
     } catch (error) {
@@ -80,5 +92,6 @@ export const config = {
     "/absen_guru/create",
     "/profile",
     "/settings",
+    "/jadwal_siswa",
   ],
 };

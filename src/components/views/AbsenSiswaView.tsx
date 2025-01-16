@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/useAuth";
 import { useRouter } from "next/navigation";
 import Loading from "../Loading";
+import Link from "next/link";
+import { FaPencilAlt } from "react-icons/fa";
 
 const AbsenSiswaView = () => {
   const [dataAbsen, setDataAbsen] = useState([]);
@@ -126,6 +128,14 @@ const AbsenSiswaView = () => {
     calendar[i + firstDay] = i + 1;
   }
 
+  const getFullDate = (date: any) => {
+    const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(
+      date
+    ).padStart(2, "0")}`;
+
+    return formattedDate;
+  };
+
   return (
     <div className="p-4 space-y-3">
       <h1 className="text-xl font-semibold">Absen Siswa</h1>
@@ -205,9 +215,11 @@ const AbsenSiswaView = () => {
                 <h1 className="font-semibold text-gray-600 text-sm md:text-lg">
                   Absensi Hari ini: {todayAttendance.status}
                 </h1>
-                <span className="text-gray-300 text-xs">
-                  {todayAttendance.tanggal.split("T")[0]}
-                </span>
+                <div className="space-y-1">
+                  <p className="text-gray-300 text-xs">
+                    {todayAttendance.tanggal.split("T")[0]}
+                  </p>
+                </div>
               </div>
             </div>
           ) : (
@@ -292,7 +304,20 @@ const AbsenSiswaView = () => {
               {/* Calendar Days */}
               <div className="grid grid-cols-7 gap-px bg-gray-200">
                 {calendar.map((day, index) => (
-                  <div
+                  <button
+                    disabled={
+                      user?.siswa.id === user?.siswa.kelas.ketuaKelasId &&
+                      getAttendanceStatus(day)
+                        ? false
+                        : true
+                    }
+                    onClick={() => {
+                      router.push(
+                        `/absen_siswa/edit/${user?.siswa.kelasId}/${getFullDate(
+                          day
+                        )}`
+                      );
+                    }}
                     key={index}
                     className={`aspect-square ${
                       day
@@ -301,7 +326,7 @@ const AbsenSiswaView = () => {
                     }`}
                   >
                     {day && (
-                      <div className="h-full flex flex-col items-center justify-center">
+                      <div className="h-full flex flex-col items-center justify-center text-center">
                         <span
                           className={`text-sm font-medium ${
                             getAttendanceStatus(day)
@@ -318,7 +343,7 @@ const AbsenSiswaView = () => {
                         )}
                       </div>
                     )}
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>

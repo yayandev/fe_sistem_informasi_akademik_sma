@@ -58,8 +58,8 @@ const LoginView = () => {
     <div className="w-full h-screen flex">
       <div className="flex-1 hidden md:block">
         <img
-          className="w-full h-full object-fill"
-          src="/login-image.png"
+          className="w-full h-full object-cover"
+          src="/login-image.jpg"
           alt=""
         />
       </div>
@@ -69,7 +69,8 @@ const LoginView = () => {
             <img src="/logo.png" className="w-32" alt="" />
           </div>
           <h1 className="text-xl font-semibold mb-4 text-center">
-            Selamat Datang <br /> Di Sistem Informasi Akademik
+            Selamat Datang <br /> Di Sistem Informasi Akademik <br /> SMKN 1
+            KRAGILAN
           </h1>
           <p className="text-sm text-gray-500 text-center">
             Silahkan Login Untuk Melanjutkan

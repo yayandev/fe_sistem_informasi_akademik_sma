@@ -3,51 +3,53 @@ import { useAuth } from "@/context/useAuth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Loading from "../Loading";
+import { useRouter } from "next/navigation";
 
-const CreateAbsenSiswaView = () => {
+const EditManyAbsenSiswaView = ({ id_kelas, tanggal }: any) => {
   const [loading, setLoading] = useState(true);
   const [data, setData]: any = useState(null);
   const { user, token }: any = useAuth();
   const today = new Date().toISOString().split("T")[0];
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (user) {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/kelas/${user?.siswa.kelas.id}/siswas`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (response.ok) {
-            const responseData = await response.json();
-            setData(responseData.data);
-            setLoading(false);
-          } else {
-            console.error(`Error ${response.status}: ${response.statusText}`);
-            setSuccess(false);
-            setMessage("Gagal mengambil data kelas.");
+  const router = useRouter();
+  const fetchData = async () => {
+    try {
+      if (user) {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/absensi_siswa/get_absensi_by_id_kelas_and_date`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ kelas_id: id_kelas, tanggal }),
           }
+        );
+        if (response.ok) {
+          const responseData = await response.json();
+          setData(responseData.data);
+          setLoading(false);
+        } else {
+          console.log(`Error ${response.status}: ${response.statusText}`);
+          setSuccess(false);
+          setMessage("Gagal mengambil data absensi.");
         }
-      } catch (error) {
-        console.error("Fetch error:", error);
-        setLoading(false);
       }
-    };
-
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
-  }, [user, token]);
+  }, [user, token, id_kelas, tanggal]);
 
   const handleSelectAll = (status: string) => {
-    data?.kelas?.siswas?.forEach((siswa: any) => {
+    data?.absensiSiswa.forEach((item: any) => {
       const radioInput: any = document.querySelector(
-        `input[name="absensi_${siswa.id}"][value="${status}"]`
+        `input[name="${item.id}"][value="${status}"]`
       );
       if (radioInput) {
         radioInput.checked = true;
@@ -56,18 +58,19 @@ const CreateAbsenSiswaView = () => {
   };
 
   const generateAbsensiData = () => {
-    const absensiData = data?.kelas?.siswas?.map((siswa: any) => {
+    const absensiData = data?.absensiSiswa?.map((item: any) => {
       const absensiRadio: any = document.querySelector(
-        `input[name="absensi_${siswa.id}"]:checked`
+        `input[name="${item.id}"]:checked`
       );
       const status = absensiRadio ? absensiRadio.value : "alpa";
       const keterangan = "";
       return {
-        siswaId: siswa.id,
+        siswaId: item.siswaId,
         status: status,
         keterangan: keterangan,
-        tanggal: today,
-        kelasId: data.kelas.id,
+        tanggal: item.tanggal,
+        kelasId: item.kelasId,
+        id: item.id,
       };
     });
 
@@ -79,9 +82,9 @@ const CreateAbsenSiswaView = () => {
       setLoading(true);
       const absensiData = generateAbsensiData();
       const response: any = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/absensi_siswa/create-many`,
+        `${process.env.NEXT_PUBLIC_API_URL}/absensi_siswa/update_many`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -91,8 +94,14 @@ const CreateAbsenSiswaView = () => {
       );
       const data = await response.json();
 
-      setSuccess(data.success);
-      setMessage(data.message);
+      if (response.ok) {
+        setSuccess(data.success);
+        setMessage(data.message);
+        router.push("/absen_siswa");
+      } else {
+        setSuccess(false);
+        setMessage("Gagal menyimpan absensi siswa. Kesalahan server.");
+      }
     } catch (error) {
       console.error("Fetch error:", error);
       setSuccess(false);
@@ -108,7 +117,7 @@ const CreateAbsenSiswaView = () => {
 
   return (
     <div className="p-4 space-y-3 w-full box-border">
-      <h1 className="text-xl font-semibold">Input Absen Siswa</h1>
+      <h1 className="text-xl font-semibold">Edit Absen Siswa</h1>
       {message && (
         <div
           className={`${
@@ -148,7 +157,7 @@ const CreateAbsenSiswaView = () => {
                 <tr className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight">
                   <th className="text-start">Jumlah Siswa</th>
                   <th className="text-start">:</th>
-                  <td className="text-start">{data?.totalSiswa}</td>
+                  <td className="text-start">{data?.absensiSiswa?.length}</td>
                 </tr>
               </tbody>
             </table>
@@ -199,46 +208,50 @@ const CreateAbsenSiswaView = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.kelas?.siswas?.map((siswa: any, index: number) => (
+                {data?.absensiSiswa?.map((item: any, index: number) => (
                   <tr
-                    key={siswa.id}
+                    key={item.id}
                     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
                   >
                     <td className="border border-gray-200 p-2 text-start">
                       {index + 1}
                     </td>
                     <td className="border border-gray-200 p-2 text-start">
-                      {siswa.nis}
+                      {item.siswa.nis}
                     </td>
                     <td className="border border-gray-200 p-2 text-start">
-                      {siswa.nama}
+                      {item.siswa.nama}
                     </td>
                     <td className="border border-gray-200 p-2 text-center">
                       <input
                         type="radio"
-                        name={`absensi_${siswa.id}`}
+                        name={item.id}
                         value="hadir"
+                        defaultChecked={item.status === "hadir" ? true : false}
                       />
                     </td>
                     <td className="border border-gray-200 p-2 text-center">
                       <input
                         type="radio"
-                        name={`absensi_${siswa.id}`}
+                        name={item.id}
                         value="izin"
+                        defaultChecked={item.status === "izin" ? true : false}
                       />
                     </td>
                     <td className="border border-gray-200 p-2 text-center">
                       <input
                         type="radio"
-                        name={`absensi_${siswa.id}`}
+                        name={item.id}
                         value="alpa"
+                        defaultChecked={item.status === "alpa" ? true : false}
                       />
                     </td>
                     <td className="border border-gray-200 p-2 text-center">
                       <input
                         type="radio"
-                        name={`absensi_${siswa.id}`}
+                        name={item.id}
                         value="sakit"
+                        defaultChecked={item.status === "sakit" ? true : false}
                       />
                     </td>
                   </tr>
@@ -287,4 +300,4 @@ const CreateAbsenSiswaView = () => {
   );
 };
 
-export default CreateAbsenSiswaView;
+export default EditManyAbsenSiswaView;
